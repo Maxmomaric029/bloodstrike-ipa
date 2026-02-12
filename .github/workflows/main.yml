@@ -14,26 +14,18 @@ jobs:
 
       - name: Prepare Files
         run: |
-          # Si los archivos están dentro de la carpeta bloodstrike-ipa, los sacamos a la raíz
+          # Asegurarnos de estar en la raíz de los archivos
           if [ -d "bloodstrike-ipa" ]; then
-            echo "Detectada carpeta bloodstrike-ipa, moviendo archivos..."
             cp -r bloodstrike-ipa/* .
           fi
           
-          # Verificar que main.swift existe
-          if [ ! -f "main.swift" ]; then
-            echo "ERROR: No se encuentra main.swift en $(pwd)"
-            ls -R
-            exit 1
-          fi
-
-      - name: Create App Structure
-        run: |
+          # Borrar cualquier rastro de configuraciones viejas
           mkdir -p BloodieHub.app
           cp index.html style.css script.js manifest.json BloodieHub.app/
 
       - name: Compile Swift Motor
         run: |
+          # Compilar sin el atributo @main explícito (main.swift lo maneja solo)
           xcrun -sdk iphoneos swiftc main.swift \
           -target arm64-apple-ios14.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
@@ -67,7 +59,7 @@ jobs:
 
       - name: Package IPA
         run: |
-          mkdir Payload
+          mkdir -p Payload
           cp -r BloodieHub.app Payload/
           zip -r BloodieHub.ipa Payload
 
