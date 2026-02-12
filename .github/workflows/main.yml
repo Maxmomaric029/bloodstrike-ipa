@@ -12,19 +12,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create App Structure
+      - name: Prepare Files
         run: |
-          # Si los archivos están en la raíz, esto funcionará. 
-          # Si están en bloodstrike-ipa, los movemos a la raíz.
+          # Si los archivos están dentro de la carpeta bloodstrike-ipa, los sacamos a la raíz
           if [ -d "bloodstrike-ipa" ]; then
-            mv bloodstrike-ipa/* .
+            echo "Detectada carpeta bloodstrike-ipa, moviendo archivos..."
+            cp -r bloodstrike-ipa/* .
           fi
           
+          # Verificar que main.swift existe
+          if [ ! -f "main.swift" ]; then
+            echo "ERROR: No se encuentra main.swift en $(pwd)"
+            ls -R
+            exit 1
+          fi
+
+      - name: Create App Structure
+        run: |
           mkdir -p BloodieHub.app
-          cp index.html BloodieHub.app/
-          cp style.css BloodieHub.app/
-          cp script.js BloodieHub.app/
-          cp manifest.json BloodieHub.app/
+          cp index.html style.css script.js manifest.json BloodieHub.app/
 
       - name: Compile Swift Motor
         run: |
