@@ -1,0 +1,15 @@
+{
+  "name": "Bloodstrike Mod Menu",
+  "short_name": "BS Mod",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#a020f0",
+  "icons": [
+    {
+      "src": "https://i.pinimg.com/736x/e1/85/c4/e185c4507e52e12b5fde8541a44e8b37.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
