@@ -1,4 +1,4 @@
-name: Build Real Functional IPA
+name: Build IPA
 
 on:
   push:
@@ -9,41 +9,24 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug - List Initial Files
+      - name: Setup Files
         run: |
-          echo "Directorio actual: $(pwd)"
-          ls -R
-
-      - name: Prepare Files
-        run: |
-          # Buscar AppDelegate.swift y moverlo a la raíz si no está
-          find . -name "AppDelegate.swift" -exec cp {} . \;
+          find . -name "main.swift" -exec cp {} . \;
           find . -name "index.html" -exec cp {} . \;
           find . -name "style.css" -exec cp {} . \;
           find . -name "script.js" -exec cp {} . \;
           find . -name "manifest.json" -exec cp {} . \;
-          
-          echo "Archivos en raíz después de preparar:"
-          ls -F
 
-      - name: Create App Structure
+      - name: Build App
         run: |
           mkdir -p BloodieHub.app
           cp index.html style.css script.js manifest.json BloodieHub.app/
+          xcrun -sdk iphoneos swiftc main.swift -target arm64-apple-ios14.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -o BloodieHub.app/BloodieHub -emit-executable
 
-      - name: Compile Swift Motor
-        run: |
-          # Usamos el atributo main en la clase para el punto de entrada
-          xcrun -sdk iphoneos swiftc AppDelegate.swift \
-          -target arm64-apple-ios14.0 \
-          -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
-          -o BloodieHub.app/BloodieHub \
-          -emit-executable
-
-      - name: Setup Info.plist
+      - name: Info
         run: |
           cat <<EOF > BloodieHub.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
@@ -68,13 +51,13 @@ jobs:
           </plist>
           EOF
 
-      - name: Package IPA
+      - name: Pack
         run: |
-          mkdir -p Payload
+          mkdir Payload
           cp -r BloodieHub.app Payload/
           zip -r BloodieHub.ipa Payload
 
-      - name: Upload IPA
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: Bloodie-Final-IPA
