@@ -21,7 +21,6 @@ class ViewController: UIViewController, WKUIDelegate {
     }
 }
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -31,3 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 }
+
+// Punto de entrada manual para evitar errores de compilacion
+UIApplicationMain(
+    CommandLine.argc,
+    CommandLine.unsafeArgv,
+    nil,
+    NSStringFromClass(AppDelegate.self)
+)
