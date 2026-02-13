@@ -14,19 +14,20 @@ jobs:
 
       - name: Prepare Files
         run: |
-          # Asegurarnos de estar en la raíz de los archivos
+          # Si los archivos están en la carpeta, los movemos a la raíz del runner
           if [ -d "bloodstrike-ipa" ]; then
             cp -r bloodstrike-ipa/* .
           fi
-          
-          # Borrar cualquier rastro de configuraciones viejas
+
+      - name: Create App Structure
+        run: |
           mkdir -p BloodieHub.app
           cp index.html style.css script.js manifest.json BloodieHub.app/
 
       - name: Compile Swift Motor
         run: |
-          # Compilar sin el atributo @main explícito (main.swift lo maneja solo)
-          xcrun -sdk iphoneos swiftc main.swift \
+          # Compilamos AppDelegate.swift como librería para que el @main funcione
+          xcrun -sdk iphoneos swiftc AppDelegate.swift \
           -target arm64-apple-ios14.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
           -o BloodieHub.app/BloodieHub \
