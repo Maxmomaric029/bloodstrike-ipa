@@ -12,12 +12,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug - List Initial Files
+        run: |
+          echo "Directorio actual: $(pwd)"
+          ls -R
+
       - name: Prepare Files
         run: |
-          # Si los archivos están en la carpeta, los movemos a la raíz del runner
-          if [ -d "bloodstrike-ipa" ]; then
-            cp -r bloodstrike-ipa/* .
-          fi
+          # Buscar AppDelegate.swift y moverlo a la raíz si no está
+          find . -name "AppDelegate.swift" -exec cp {} . \;
+          find . -name "index.html" -exec cp {} . \;
+          find . -name "style.css" -exec cp {} . \;
+          find . -name "script.js" -exec cp {} . \;
+          find . -name "manifest.json" -exec cp {} . \;
+          
+          echo "Archivos en raíz después de preparar:"
+          ls -F
 
       - name: Create App Structure
         run: |
@@ -26,7 +36,7 @@ jobs:
 
       - name: Compile Swift Motor
         run: |
-          # Compilamos AppDelegate.swift como librería para que el @main funcione
+          # Usamos el atributo main en la clase para el punto de entrada
           xcrun -sdk iphoneos swiftc AppDelegate.swift \
           -target arm64-apple-ios14.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
